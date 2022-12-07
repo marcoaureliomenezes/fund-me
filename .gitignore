@@ -6,3 +6,5 @@ build/
 reports/
 interfaces/
 deploy_mocks.py
+docker-compose.yml
+*.sh

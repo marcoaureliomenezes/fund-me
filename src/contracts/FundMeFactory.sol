@@ -14,9 +14,9 @@ contract FundMe {
     AggregatorV3Interface public priceFeed;
     uint256 public entranceFeeUSD;
 
-    constructor(address _priceFeed, uint256 _minEntranceFeeUSD) public {
+    constructor(address _owner, address _priceFeed, uint256 _minEntranceFeeUSD) public {
         priceFeed = AggregatorV3Interface(_priceFeed);
-        owner = msg.sender;
+        owner = _owner;
         entranceFeeUSD = _minEntranceFeeUSD;
     }
 
@@ -62,4 +62,24 @@ contract FundMe {
         }
         funders = new address[](0);
     }
+}
+
+contract FundMeFactory {
+    FundMe[] public FundmeArray;
+    address public factoryDeployer;
+
+    constructor() public {
+        factoryDeployer = msg.sender;
+    }
+
+    function createFundMeContract(address _owner, address _priceFeed, uint256 _minEntranceFeeUSD) public returns (address) {
+        FundMe fundme = new FundMe(_owner, _priceFeed, _minEntranceFeeUSD);
+        FundmeArray.push(fundme);
+        return address(fundme);
+    }
+
+    function getFund(uint256 _fundmeIndex) public view returns (uint256) {
+        return FundMe(address(FundmeArray[_fundmeIndex])).getPrice();
+    }
+
 }
